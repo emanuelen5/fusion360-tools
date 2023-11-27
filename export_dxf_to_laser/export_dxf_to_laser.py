@@ -5,6 +5,7 @@ It will export the files with names on the format componentName_bodyName_Nx.dxf 
 You will need to modify the output directory before using the script.
 """
 
+import math
 from pathlib import Path
 
 import adsk.cam
@@ -46,7 +47,7 @@ def run(_):
                 continue
 
             a, b = faceList[0], faceList[1]
-            if a.area - b.area > 0.01:
+            if not math.isclose(a.area, b.area):
                 print(
                     "Two largest faces don't seem to be of the same size."
                     " Probably not a part intended for laser cutting"
