@@ -12,6 +12,8 @@ import adsk.cam
 import adsk.core
 import adsk.fusion
 
+from export_dxf_to_laser.debounced import debounced
+
 
 def get_save_folder() -> Path | None:
     app = adsk.core.Application.get()
@@ -27,6 +29,8 @@ def get_save_folder() -> Path | None:
 def run(_):
     print("Running...")
     app = adsk.core.Application.get()
+
+    idle_task = debounced(adsk.doEvents)
 
     save_folder = get_save_folder()
     if save_folder is None:
@@ -60,5 +64,6 @@ def run(_):
             output_path = save_folder / f"{comp.name}_{body.name}_{occurances}.dxf"
             sketch.saveAsDXF(str(output_path))
             sketch.deleteMe()
-        adsk.doEvents()
+            idle_task()
+
     print("Done.")
