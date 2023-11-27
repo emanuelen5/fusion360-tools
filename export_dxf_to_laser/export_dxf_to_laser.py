@@ -5,16 +5,11 @@ It will export the files with names on the format componentName_bodyName_Nx.dxf 
 You will need to modify the output directory before using the script.
 """
 
-import math
-import traceback
 from pathlib import Path
 
 import adsk.cam
 import adsk.core
 import adsk.fusion
-
-# Globals
-_app = adsk.core.Application.cast(None)
 
 
 def get_save_folder() -> Path | None:
@@ -28,7 +23,7 @@ def get_save_folder() -> Path | None:
     return None
 
 
-def run(context):
+def run(_):
     print("Running...")
     app = adsk.core.Application.get()
 
