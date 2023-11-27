@@ -1,9 +1,12 @@
-Jag brukar designa mina laserprojekt med Fusion360, men jag blev lite trött på exportera varje sketch separat varenda gång man gjorde en ändring i designen, speciellt med större projekt som hade många delar. Så jag gjorde ett script som gör det åt mig, och tänkte att andra kanske skulle kunna vara intresserade.
+# `export_dxf_to_laser`
+Exports each planar object (simple extruded object) into a separate .dxf file, ready for lasering in e.g. LightBurn.
 
-Laser
-=====
-Exporterar varje plant objekt till en .dxf fil.
+## Installation
+1. Create a folder somewhere on your computer. Download the script (.py-file) and save it in the folder.
+1. Open Fusion360 and go to _Scripts and Add-Ins_ (`Shift+S`)
+1. Press the green plus button and choose the installation folder (that you created in step 1).
 
-Installation
-------------
-Skapa en ny folder som heter "laser" någonstans. Ladda ner filen och lägg den i foldern. Öppna filen och ändra variabeln output_path till var du vill att filerna ska exporteras (även om du använder windows så ska du skriva sökvägen med forward slash '/', inte backslash '\') . Öppna Fusion360 och gå till Scripts and Add-Ins, tryck på den gröna plussknappen och välj "laser" mappen. Sen så kan du köra scriptet från fusion360 som kommer att exportera alla plana ytor som ser ut som att de är till för laserskärning till foldern som output_path pekar på.
+## Running the script
+1. Open Fusion360 and go to _Scripts and Add-Ins_ (`Shift+S`)
+1. Select the script `eport_dxf_to_laser`
+1. A popup will ask for a folder where to save the .dxf files

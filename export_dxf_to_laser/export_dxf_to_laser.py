@@ -5,16 +5,37 @@ It will export the files with names on the format componentName_bodyName_Nx.dxf 
 You will need to modify the output directory before using the script.
 """
 
-output_path = "/Users/arong/fusion/output"
-import adsk.core, adsk.fusion, adsk.cam, traceback
 import math
+import traceback
+from pathlib import Path
+
+import adsk.cam
+import adsk.core
+import adsk.fusion
 
 # Globals
 _app = adsk.core.Application.cast(None)
 
+
+def get_save_folder() -> Path | None:
+    app = adsk.core.Application.get()
+    ui = app.userInterface
+    folder_dialog = ui.createFolderDialog()
+    folder_dialog.title = "Select where to save .dxf files"
+    dlg_res = folder_dialog.showDialog()
+    if dlg_res == adsk.core.DialogResults.DialogOK:
+        return Path(folder_dialog.folder)
+    return None
+
+
 def run(context):
     print("Running...")
     app = adsk.core.Application.get()
+
+    save_folder = get_save_folder()
+    if save_folder is None:
+        print("Cancelling since no folder was selected")
+        return
 
     des = adsk.fusion.Design.cast(app.activeProduct)
     for comp in des.allComponents:
@@ -32,7 +53,8 @@ def run(context):
                 continue
 
             sketch = comp.sketches.add(a)
-            sketch.saveAsDXF(output_path + "/" + str(comp.name) + "_" + body.name + "_" + str(len(des.rootComponent.allOccurrencesByComponent(comp))) + "x.dxf")
+            output_path = save_folder / f"{comp.name}_{body.name}_{len(des.rootComponent.allOccurrencesByComponent(comp))}.dxf"
+            sketch.saveAsDXF(str(output_path))
             sketch.deleteMe()
-            #adsk.doEvents()
+        adsk.doEvents()
     print("Done.")
