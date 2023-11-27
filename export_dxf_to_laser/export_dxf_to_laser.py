@@ -40,20 +40,28 @@ def run(context):
     des = adsk.fusion.Design.cast(app.activeProduct)
     for comp in des.allComponents:
         for body in comp.bRepBodies:
-            print(body.name)
-            faceList = [x for x in body.faces if isinstance(x.geometry, adsk.core.Plane)]
+            body_path = f"{comp.name}/{body.name}"
+            print(body_path)
+            faceList = [
+                x for x in body.faces if isinstance(x.geometry, adsk.core.Plane)
+            ]
             faceList.sort(key=lambda face: face.area, reverse=True)
             if len(faceList) < 2:
-                print("Weird body with less than 2 planar faces (" + comp.name + "/" + body.name + ")")
+                print(f"Weird body with less than 2 planar faces ({body_path})")
                 continue
 
             a, b = faceList[0], faceList[1]
             if a.area - b.area > 0.01:
-                print("Two largest faces don't seem to be of the same size. Probably not a part intended for laser cutting (" + str(a.area) + " " + str(b.area) + ") (" + comp.name + "/" + body.name + ")")
+                print(
+                    "Two largest faces don't seem to be of the same size."
+                    " Probably not a part intended for laser cutting"
+                    f" ({a.area} {b.area}) ({body_path})"
+                )
                 continue
 
             sketch = comp.sketches.add(a)
-            output_path = save_folder / f"{comp.name}_{body.name}_{len(des.rootComponent.allOccurrencesByComponent(comp))}.dxf"
+            occurances = len(des.rootComponent.allOccurrencesByComponent(comp))
+            output_path = save_folder / f"{comp.name}_{body.name}_{occurances}.dxf"
             sketch.saveAsDXF(str(output_path))
             sketch.deleteMe()
         adsk.doEvents()
