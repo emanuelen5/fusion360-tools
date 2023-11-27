@@ -37,20 +37,19 @@ def run(_):
         print("Cancelling since no folder was selected")
         return
 
-    des = adsk.fusion.Design.cast(app.activeProduct)
-    for comp in des.allComponents:
-        for body in comp.bRepBodies:
-            body_path = f"{comp.name}/{body.name}"
-            print(body_path)
-            faceList = [
+    design = adsk.fusion.Design.cast(app.activeProduct)
+    for component in design.allComponents:
+        for body in component.bRepBodies:
+            body_path = f"{component.name}/{body.name}"
+            face_list = [
                 x for x in body.faces if isinstance(x.geometry, adsk.core.Plane)
             ]
-            faceList.sort(key=lambda face: face.area, reverse=True)
-            if len(faceList) < 2:
+            face_list.sort(key=lambda face: face.area, reverse=True)
+            if len(face_list) < 2:
                 print(f"Weird body with less than 2 planar faces ({body_path})")
                 continue
 
-            a, b = faceList[0], faceList[1]
+            a, b = face_list[0], face_list[1]
             if not math.isclose(a.area, b.area):
                 print(
                     "Two largest faces don't seem to be of the same size."
@@ -59,11 +58,14 @@ def run(_):
                 )
                 continue
 
-            sketch = comp.sketches.add(a)
-            occurances = len(des.rootComponent.allOccurrencesByComponent(comp))
-            output_path = save_folder / f"{comp.name}_{body.name}_{occurances}.dxf"
-            sketch.saveAsDXF(str(output_path))
-            sketch.deleteMe()
+            output_path = save_folder / str(body_path).replace(" ", "-") + ".dxf"
+            save_dxf(output_path, component, body_path)
             idle_task()
 
     print("Done.")
+
+
+def save_dxf(output_path, component, face):
+    sketch = component.sketches.add(face)
+    sketch.saveAsDXF(str(output_path))
+    sketch.deleteMe()
